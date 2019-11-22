@@ -4,11 +4,11 @@
 
 ## eBook 1: FFmpeg Tutorial
 
-* [Introduction](ebook-1-ffmpeg-tutorial/introduction.md)
+* [Introduction](ffmpeg/README.md)
 
 ## eBook 2: Data Learning
 
-* [Học trở thành Data Engineer](ebook-2-data-learning/hoc-tro-thanh-data-engineer.md)
+* [Học trở thành Data Engineer](datalearning/hoc-tro-thanh-data-engineer.md)
 * [Data Engineering Roadmap](ebook-2-data-learning/data-engineering-roadmap.md)
 
 ## Chương 1: Dữ liệu thô <a id="chapter-1-raw-data"></a>
