@@ -89,7 +89,7 @@ A **single file that contains all the streams** (mostly the audio and video) and
 
 Usually we can infer the format of a file by looking at its extension: for instance a `video.webm` is probably a video using the container [`webm`](https://www.webmproject.org/).
 
-![container](/img/container.png)
+![container](/FFmpeg/img/container.png)
 
 # FFmpeg - command line
 
@@ -146,7 +146,7 @@ While working with audio/video we usually do a set of tasks with the media.
 
 ## Transcoding
 
-![transcoding](/img/transcoding.png)
+![transcoding](/FFmpeg/img/transcoding.png)
 
 **What?** the act of converting one of the streams (audio or video) from one CODEC to another one.
 
@@ -162,7 +162,7 @@ bunny_1080p_60fps_h265.mp4
 
 ## Transmuxing
 
-![transmuxing](/img/transmuxing.png)
+![transmuxing](/FFmpeg/img/transmuxing.png)
 
 **What?** the act of converting from one format (container) to another one.
 
@@ -178,7 +178,7 @@ bunny_1080p_60fps.webm
 
 ## Transrating
 
-![transrating](/img/transrating.png)
+![transrating](/FFmpeg/img/transrating.png)
 
 **What?** the act of changing the bit rate, or producing other renditions.
 
@@ -196,7 +196,7 @@ Usually we'll be using transrating with transsizing. Werner Robitza wrote anothe
 
 ## Transsizing
 
-![transsizing](/img/transsizing.png)
+![transsizing](/FFmpeg/img/transsizing.png)
 
 **What?** the act of converting from one resolution to another one. As said before transsizing is often used with transrating.
 
@@ -277,7 +277,7 @@ But before we start to code, let's learn how **FFmpeg libav architecture** works
 
 Here's a diagram of the process of decoding a video:
 
-![ffmpeg libav architecture - decoding process](/img/decoding.png)
+![ffmpeg libav architecture - decoding process](/FFmpeg/img/decoding.png)
 
 You'll first need to load your media file into a component called [`AVFormatContext`](https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html) (the video container is also known as format).
 It actually doesn't fully load the whole file: it often only reads the header.
@@ -440,7 +440,7 @@ static void save_gray_frame(unsigned char *buf, int wrap, int xsize, int ysize, 
 
 And voilà! Now we have a gray scale image with 2MB:
 
-![saved frame](/img/generated_frame.png)
+![saved frame](/FFmpeg/img/generated_frame.png)
 
 ## Chapter 1 - syncing audio and video
 
@@ -450,12 +450,12 @@ Before we move to [code a transcoding example](#chapter-2---transcoding) let's t
 
 In the last example, we saved some frames that can be seen here:
 
-![frame 0](/img/hello_world_frames/frame0.png)
-![frame 1](/img/hello_world_frames/frame1.png)
-![frame 2](/img/hello_world_frames/frame2.png)
-![frame 3](/img/hello_world_frames/frame3.png)
-![frame 4](/img/hello_world_frames/frame4.png)
-![frame 5](/img/hello_world_frames/frame5.png)
+![frame 0](/FFmpeg/img/hello_world_frames/frame0.png)
+![frame 1](/FFmpeg/img/hello_world_frames/frame1.png)
+![frame 2](/FFmpeg/img/hello_world_frames/frame2.png)
+![frame 3](/FFmpeg/img/hello_world_frames/frame3.png)
+![frame 4](/FFmpeg/img/hello_world_frames/frame4.png)
+![frame 5](/FFmpeg/img/hello_world_frames/frame5.png)
 
 When we're designing a video player we need to **play each frame at a given pace**, otherwise it would be hard to pleasantly see the video either because it's playing so fast or so slow.
 
@@ -527,7 +527,7 @@ The general usage of FFmpeg or the libav follows a pattern/architecture or workf
 * **[format layer](https://ffmpeg.org/doxygen/trunk/group__libavf.html)** - it `muxes` (or `remuxes`) the raw streams (the compressed data)
 * **[protocol layer](https://ffmpeg.org/doxygen/trunk/protocols_8c.html)** - and finally the muxed data is sent to an `output` (another file or maybe a network remote server)
 
-![ffmpeg libav workflow](/img/ffmpeg_libav_workflow.jpeg)
+![ffmpeg libav workflow](/FFmpeg/img/ffmpeg_libav_workflow.jpeg)
 > This graph is strongly inspired by [Leixiaohua's](http://leixiaohua1020.github.io/#ffmpeg-development-examples) and [Slhck's](https://slhck.info/ffmpeg-encoding-course/#/9) works.
 
 Now let's code an example using libav to provide the same effect as in `ffmpeg input.mp4 -c copy output.ts`.
@@ -673,7 +673,7 @@ Input #0, mpegts, from 'remuxed_small_bunny_1080p_60fps.ts':
 
 To sum up what we did here in a graph, we can revisit our initial [idea about how libav works](https://github.com/leandromoreira/ffmpeg-libav-tutorial#ffmpeg-libav-architecture) but showing that we skipped the codec part.
 
-![remuxing libav components](/img/remuxing_libav_components.png)
+![remuxing libav components](/FFmpeg/img/remuxing_libav_components.png)
 
 Before we end this chapter I'd like to show an important part of the remuxing process, **you can pass options to the muxer**. Let's say we want to delivery [MPEG-DASH](https://developer.mozilla.org/en-US/docs/Web/Apps/Fundamentals/Audio_and_video_delivery/Setting_up_adaptive_streaming_media_sources#MPEG-DASH_Encoding) format for that matter we need to use [fragmented mp4](https://stackoverflow.com/a/35180327) (sometimes referred as `fmp4`) instead of MPEG-TS or plain MPEG-4.
 
@@ -699,9 +699,9 @@ make run_remuxing_fragmented_mp4
 
 But to make sure that I'm not lying to you. You can use the amazing site/tool [gpac/mp4box.js](http://download.tsi.telecom-paristech.fr/gpac/mp4box.js/filereader.html) or the site [http://mp4parser.com/](http://mp4parser.com/) to see the differences, first load up the "common" mp4.
 
-![mp4 boxes](/img/boxes_normal_mp4.png)
+![mp4 boxes](/FFmpeg/img/boxes_normal_mp4.png)
 
 As you can see it has a single `mdat` atom/box, **this is place where the video and audio frames are**. Now load the fragmented mp4 to see which how it spreads the `mdat` boxes.
 
-![fragmented mp4 boxes](/img/boxes_fragmente_mp4.png)
+![fragmented mp4 boxes](/FFmpeg/img/boxes_fragmente_mp4.png)
 
