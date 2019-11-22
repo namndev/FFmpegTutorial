@@ -61,4 +61,4 @@ A **single file that contains all the streams** \(mostly the audio and video\) a
 
 Usually we can infer the format of a file by looking at its extension: for instance a `video.webm` is probably a video using the container [`webm`](https://www.webmproject.org/).
 
-![container](/img/container.png)
+![container](/.gitbook/assets/container.png)
