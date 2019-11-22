@@ -2,9 +2,10 @@
 
 ## eBook 1: FFmpeg Tutorial
 * [Introduction](ffmpeg/README.md)
+
 ## eBook 2: Data Learning
-* [Học trở thành Data Engineer](/datalearning/README.md)
-* [Data Engineering Roadmap](/datalearning/data-engineering-roadmap.md)
+* [Học trở thành Data Engineer](datalearning/README.md)
+* [Data Engineering Roadmap](datalearning/data-engineering-roadmap.md)
 
 ### Chương 1: Dữ liệu thô <a id="chapter-1-raw-data"></a>
 
