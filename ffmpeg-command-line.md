@@ -1,7 +1,5 @@
 # FFmpeg - command line
 
-
-
 > A complete, cross-platform solution to record, convert and stream audio and video.
 
 To work with multimedia we can use the AMAZING tool/library called [FFmpeg](https://www.ffmpeg.org/). Chances are you already know/use it directly or indirectly \(do you use [Chrome?](https://www.chromium.org/developers/design-documents/video)\).
@@ -14,7 +12,7 @@ $ ffmpeg -i input.mp4 output.avi
 
 We just made a **remuxing** here, which is converting from one container to another one. Technically FFmpeg could also be doing a transcoding but we'll talk about that later.
 
-#### FFmpeg command line tool 101
+## FFmpeg command line tool 101
 
 FFmpeg does have a [documentation](https://www.ffmpeg.org/ffmpeg.html) that does a great job of explaining how it works.
 
