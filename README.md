@@ -1,73 +1,70 @@
 ---
 description: >-
-  FFmpeg tutorial - learn how media works from basic to transmuxing, transcoding and more
+  FFmpeg tutorial - learn how media works from basic to transmuxing, transcoding
+  and more
 ---
-# FFmpegTutorial
 
-[![license](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)](https://img.shields.io/badge/license-BSD--3--Clause-blue.svg)
+# FFmpeg libav tutorial
 
-I was looking for a tutorial/book that would teach me how to start to use [FFmpeg](https://www.ffmpeg.org/) as a library (a.k.a. libav) and then I found the ["How to write a video player in less than 1k lines"](http://dranger.com/ffmpeg/) tutorial.
-Unfortunately it was deprecated, so I decided to write this one.
+I was looking for a tutorial/book that would teach me how to start to use [FFmpeg](https://www.ffmpeg.org/) as a library \(a.k.a. libav\) and then I found the ["How to write a video player in less than 1k lines"](http://dranger.com/ffmpeg/) tutorial. Unfortunately it was deprecated, so I decided to write this one.
 
-Most of the code in here will be in c **but don't worry**: you can easily understand and apply it to your preferred language.
-FFmpeg libav has lots of bindings for many languages like [python](https://mikeboers.github.io/PyAV/), [go](https://github.com/imkira/go-libav) and even if your language doesn't have it, you can still support it through the `ffi` (here's an example with [Lua](https://github.com/daurnimator/ffmpeg-lua-ffi/blob/master/init.lua)).
+Most of the code in here will be in c **but don't worry**: you can easily understand and apply it to your preferred language. FFmpeg libav has lots of bindings for many languages like [python](https://mikeboers.github.io/PyAV/), [go](https://github.com/imkira/go-libav) and even if your language doesn't have it, you can still support it through the `ffi` \(here's an example with [Lua](https://github.com/daurnimator/ffmpeg-lua-ffi/blob/master/init.lua)\).
 
-We'll start with a quick lesson about what is video, audio, codec and container and then we'll go to a crash course on how to use `FFmpeg` command line and finally we'll write code, feel free to skip directly to[ ](http://newmediarockstars.com/wp-content/uploads/2015/11/nintendo-direct-iwata.jpg)the section [Learn FFmpeg libav the Hard Way.](#learn-ffmpeg-libav-the-hard-way)
+We'll start with a quick lesson about what is video, audio, codec and container and then we'll go to a crash course on how to use `FFmpeg` command line and finally we'll write code, feel free to skip directly to[ ](http://newmediarockstars.com/wp-content/uploads/2015/11/nintendo-direct-iwata.jpg)the section [Learn FFmpeg libav the Hard Way.](./#learn-ffmpeg-libav-the-hard-way)
 
 Some people used to say that the Internet video streaming is the future of the traditional TV, in any case, the FFmpeg is something that is worth studying.
 
-__Table of Contents__
+**Table of Contents**
 
-* [Intro](#intro)
-  * [video - what you see!](#video---what-you-see)
-  * [audio - what you listen!](#audio---what-you-listen)
-  * [codec - shrinking data](#codec---shrinking-data)
-  * [container - a comfy place for audio and video](#container---a-comfy-place-for-audio-and-video)
-* [FFmpeg - command line](#ffmpeg---command-line)
-  * [FFmpeg command line tool 101](#ffmpeg-command-line-tool-101)
-* [Common video operations](#common-video-operations)
-  * [Transcoding](#transcoding)
-  * [Transmuxing](#transmuxing)
-  * [Transrating](#transrating)
-  * [Transsizing](#transsizing)
-  * [Bonus Round: Adaptive Streaming](#bonus-round-adaptive-streaming)
-  * [Going beyond](#going-beyond)
-* [Learn FFmpeg libav the Hard Way](#learn-ffmpeg-libav-the-hard-way)
-  * [Chapter 0 - The infamous hello world](#chapter-0---the-infamous-hello-world)
-    * [FFmpeg libav architecture](#ffmpeg-libav-architecture)
-  * [Chapter 1 - timing](#chapter-1---syncing-audio-and-video)
-  * [Chapter 2 - remuxing](#chapter-2---remuxing)
+* [Intro](./#intro)
+  * [video - what you see!](./#video---what-you-see)
+  * [audio - what you listen!](./#audio---what-you-listen)
+  * [codec - shrinking data](./#codec---shrinking-data)
+  * [container - a comfy place for audio and video](./#container---a-comfy-place-for-audio-and-video)
+* [FFmpeg - command line](./#ffmpeg---command-line)
+  * [FFmpeg command line tool 101](./#ffmpeg-command-line-tool-101)
+* [Common video operations](./#common-video-operations)
+  * [Transcoding](./#transcoding)
+  * [Transmuxing](./#transmuxing)
+  * [Transrating](./#transrating)
+  * [Transsizing](./#transsizing)
+  * [Bonus Round: Adaptive Streaming](./#bonus-round-adaptive-streaming)
+  * [Going beyond](./#going-beyond)
+* [Learn FFmpeg libav the Hard Way](./#learn-ffmpeg-libav-the-hard-way)
+  * [Chapter 0 - The infamous hello world](./#chapter-0---the-infamous-hello-world)
+    * [FFmpeg libav architecture](./#ffmpeg-libav-architecture)
+  * [Chapter 1 - timing](./#chapter-1---syncing-audio-and-video)
+  * [Chapter 2 - remuxing](./#chapter-2---remuxing)
 
-# Intro
+## Intro
 
-## video - what you see!
+### video - what you see!
 
-If you have a sequence series of images and change them at a given frequency (let's say [24 images per second](https://www.filmindependent.org/blog/hacking-film-24-frames-per-second/)), you will create an [illusion of movement](https://en.wikipedia.org/wiki/Persistence_of_vision).
-In summary this is the very basic idea behind a video: **a series of pictures / frames running at a given rate**.
+If you have a sequence series of images and change them at a given frequency \(let's say [24 images per second](https://www.filmindependent.org/blog/hacking-film-24-frames-per-second/)\), you will create an [illusion of movement](https://en.wikipedia.org/wiki/Persistence_of_vision). In summary this is the very basic idea behind a video: **a series of pictures / frames running at a given rate**.
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/1/1f/Linnet_kineograph_1886.jpg" title="flip book" height="280"></img>
+![](https://upload.wikimedia.org/wikipedia/commons/1/1f/Linnet_kineograph_1886.jpg)
 
-Zeitgenössische Illustration (1886)
+Zeitgenössische Illustration \(1886\)
 
-## audio - what you listen!
+### audio - what you listen!
 
 Although a muted video can express a variety of feelings, adding sound to it brings more pleasure to the experience.
 
 Sound is the vibration that propagates as a wave of pressure, through the air or any other transmission medium, such as a gas, liquid or solid.
 
-> In a digital audio system, a microphone converts sound to an analog electrical signal, then an analog-to-digital converter (ADC) — typically using [pulse-code modulation (PCM)](https://en.wikipedia.org/wiki/Pulse-code_modulation) - converts the analog signal into a digital signal.
+> In a digital audio system, a microphone converts sound to an analog electrical signal, then an analog-to-digital converter \(ADC\) — typically using [pulse-code modulation \(PCM\)](https://en.wikipedia.org/wiki/Pulse-code_modulation) - converts the analog signal into a digital signal.
 
-![audio analog to digital](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/CPT-Sound-ADC-DAC.svg/640px-CPT-Sound-ADC-DAC.svg.png "audio analog to digital")
->[Source](https://commons.wikimedia.org/wiki/File:CPT-Sound-ADC-DAC.svg)
+![audio analog to digital](https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/CPT-Sound-ADC-DAC.svg/640px-CPT-Sound-ADC-DAC.svg.png)
 
-## codec - shrinking data
+> [Source](https://commons.wikimedia.org/wiki/File:CPT-Sound-ADC-DAC.svg)
 
-> CODEC is an electronic circuit or software that **compresses or decompresses digital audio/video.** It converts raw (uncompressed) digital audio/video to a compressed format or vice versa.
-> https://en.wikipedia.org/wiki/Video_codec
+### codec - shrinking data
+
+> CODEC is an electronic circuit or software that **compresses or decompresses digital audio/video.** It converts raw \(uncompressed\) digital audio/video to a compressed format or vice versa. [https://en.wikipedia.org/wiki/Video\_codec](https://en.wikipedia.org/wiki/Video_codec)
 
 But if we chose to pack millions of images in a single file and called it a movie, we might end up with a huge file. Let's do the math:
 
-Suppose we are creating a video with a resolution of `1080 x 1920` (height x width) and that we'll spend `3 bytes` per pixel (the minimal point at a screen) to encode the color (or [24 bit color](https://en.wikipedia.org/wiki/Color_depth#True_color_.2824-bit.29), what gives us 16,777,216 different colors) and this video runs at `24 frames per second` and it is `30 minutes` long.
+Suppose we are creating a video with a resolution of `1080 x 1920` \(height x width\) and that we'll spend `3 bytes` per pixel \(the minimal point at a screen\) to encode the color \(or [24 bit color](https://en.wikipedia.org/wiki/Color_depth#True_color_.2824-bit.29), what gives us 16,777,216 different colors\) and this video runs at `24 frames per second` and it is `30 minutes` long.
 
 ```c
 toppf = 1080 * 1920 //total_of_pixels_per_frame
@@ -80,34 +77,31 @@ required_storage = tis * fps * toppf * cpp
 
 This video would require approximately `250.28GB` of storage or `1.11Gbps` of bandwidth! That's why we need to use a [CODEC](https://github.com/leandromoreira/digital_video_introduction#how-does-a-video-codec-work).
 
-## container - a comfy place for audio and video
+### container - a comfy place for audio and video
 
-> A container or wrapper format is a metafile format whose specification describes how different elements of data and metadata coexist in a computer file.
-> https://en.wikipedia.org/wiki/Digital_container_format
+> A container or wrapper format is a metafile format whose specification describes how different elements of data and metadata coexist in a computer file. [https://en.wikipedia.org/wiki/Digital\_container\_format](https://en.wikipedia.org/wiki/Digital_container_format)
 
-A **single file that contains all the streams** (mostly the audio and video) and it also provides **synchronization and general metadata**, such as title, resolution and etc.
+A **single file that contains all the streams** \(mostly the audio and video\) and it also provides **synchronization and general metadata**, such as title, resolution and etc.
 
 Usually we can infer the format of a file by looking at its extension: for instance a `video.webm` is probably a video using the container [`webm`](https://www.webmproject.org/).
 
-![container](/img/container.png)
+![container](.gitbook/assets/container.png)
 
-# FFmpeg - command line
+## FFmpeg - command line
 
 > A complete, cross-platform solution to record, convert and stream audio and video.
 
-To work with multimedia we can use the AMAZING tool/library called [FFmpeg](https://www.ffmpeg.org/). Chances are you already know/use it directly or indirectly (do you use [Chrome?](https://www.chromium.org/developers/design-documents/video)).
+To work with multimedia we can use the AMAZING tool/library called [FFmpeg](https://www.ffmpeg.org/). Chances are you already know/use it directly or indirectly \(do you use [Chrome?](https://www.chromium.org/developers/design-documents/video)\).
 
-It has a command line program called `ffmpeg`, a very simple yet powerful binary.
-For instance, you can convert from `mp4` to the container `avi` just by typing the follow command:
+It has a command line program called `ffmpeg`, a very simple yet powerful binary. For instance, you can convert from `mp4` to the container `avi` just by typing the follow command:
 
 ```bash
 $ ffmpeg -i input.mp4 output.avi
 ```
 
-We just made a **remuxing** here, which is converting from one container to another one.
-Technically FFmpeg could also be doing a transcoding but we'll talk about that later.
+We just made a **remuxing** here, which is converting from one container to another one. Technically FFmpeg could also be doing a transcoding but we'll talk about that later.
 
-## FFmpeg command line tool 101
+### FFmpeg command line tool 101
 
 FFmpeg does have a [documentation](https://www.ffmpeg.org/ffmpeg.html) that does a great job of explaining how it works.
 
@@ -119,10 +113,9 @@ To make things short, the FFmpeg command line program expects the following argu
 4. output file options
 5. output url
 
-The parts 2, 3, 4 and 5 can be as many as you need.
-It's easier to understand this argument format in action:
+The parts 2, 3, 4 and 5 can be as many as you need. It's easier to understand this argument format in action:
 
-``` bash
+```bash
 # WARNING: this file is around 300MB
 $ wget -O bunny_1080p_60fps.mp4 http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_60fps_normal.mp4
 
@@ -133,26 +126,27 @@ $ ffmpeg \
 -c:v libvpx-vp9 -c:a libvorbis \ # output options
 bunny_1080p_60fps_vp9.webm # output url
 ```
-This command takes an input file `mp4` containing two streams (an audio encoded with `aac` CODEC and a video encoded using `h264` CODEC) and convert it to `webm`, changing its audio and video CODECs too.
 
-We could simplify the command above but then be aware that FFmpeg will adopt or guess the default values for you.
-For instance when you just type `ffmpeg -i input.avi output.mp4` what audio/video CODEC does it use to produce the `output.mp4`?
+This command takes an input file `mp4` containing two streams \(an audio encoded with `aac` CODEC and a video encoded using `h264` CODEC\) and convert it to `webm`, changing its audio and video CODECs too.
+
+We could simplify the command above but then be aware that FFmpeg will adopt or guess the default values for you. For instance when you just type `ffmpeg -i input.avi output.mp4` what audio/video CODEC does it use to produce the `output.mp4`?
 
 Werner Robitza wrote a must read/execute [tutorial about encoding and editing with FFmpeg](http://slhck.info/ffmpeg-encoding-course/#/).
 
-# Common video operations
+## Common video operations
 
 While working with audio/video we usually do a set of tasks with the media.
 
-## Transcoding
+### Transcoding
 
-![transcoding](/img/transcoding.png)
+![transcoding](.gitbook/assets/transcoding.png)
 
-**What?** the act of converting one of the streams (audio or video) from one CODEC to another one.
+**What?** the act of converting one of the streams \(audio or video\) from one CODEC to another one.
 
-**Why?** sometimes some devices (TVs, smartphones, console and etc) doesn't support X but Y and newer CODECs provide better compression rate.
+**Why?** sometimes some devices \(TVs, smartphones, console and etc\) doesn't support X but Y and newer CODECs provide better compression rate.
 
-**How?** converting an `H264` (AVC) video to an `H265` (HEVC).
+**How?** converting an `H264` \(AVC\) video to an `H265` \(HEVC\).
+
 ```bash
 $ ffmpeg \
 -i bunny_1080p_60fps.mp4 \
@@ -160,15 +154,16 @@ $ ffmpeg \
 bunny_1080p_60fps_h265.mp4
 ```
 
-## Transmuxing
+### Transmuxing
 
-![transmuxing](/img/transmuxing.png)
+![transmuxing](.gitbook/assets/transmuxing.png)
 
-**What?** the act of converting from one format (container) to another one.
+**What?** the act of converting from one format \(container\) to another one.
 
-**Why?** sometimes some devices (TVs, smartphones, console and etc) doesn't support X but Y and sometimes newer containers provide modern required features.
+**Why?** sometimes some devices \(TVs, smartphones, console and etc\) doesn't support X but Y and sometimes newer containers provide modern required features.
 
 **How?** converting a `mp4` to a `webm`.
+
 ```bash
 $ ffmpeg \
 -i bunny_1080p_60fps.mp4 \
@@ -176,15 +171,16 @@ $ ffmpeg \
 bunny_1080p_60fps.webm
 ```
 
-## Transrating
+### Transrating
 
-![transrating](/img/transrating.png)
+![transrating](.gitbook/assets/transrating.png)
 
 **What?** the act of changing the bit rate, or producing other renditions.
 
-**Why?** people will try to watch your video in a `2G` (edge) connection using a less powerful smartphone or in a `fiber` Internet connection on their 4K TVs therefore you should offer more than on rendition of the same video with different bit rate.
+**Why?** people will try to watch your video in a `2G` \(edge\) connection using a less powerful smartphone or in a `fiber` Internet connection on their 4K TVs therefore you should offer more than on rendition of the same video with different bit rate.
 
 **How?** producing a rendition with bit rate between 3856K and 2000K.
+
 ```bash
 $ ffmpeg \
 -i bunny_1080p_60fps.mp4 \
@@ -194,15 +190,16 @@ bunny_1080p_60fps_transrating_964_3856.mp4
 
 Usually we'll be using transrating with transsizing. Werner Robitza wrote another must read/execute [series of posts about FFmpeg rate control](http://slhck.info/posts/).
 
-## Transsizing
+### Transsizing
 
-![transsizing](/img/transsizing.png)
+![transsizing](.gitbook/assets/transsizing.png)
 
 **What?** the act of converting from one resolution to another one. As said before transsizing is often used with transrating.
 
 **Why?** reasons are about the same as for the transrating.
 
 **How?** converting a `1080p` to a `480p` resolution.
+
 ```bash
 $ ffmpeg \
 -i bunny_1080p_60fps.mp4 \
@@ -210,15 +207,16 @@ $ ffmpeg \
 bunny_1080p_60fps_transsizing_480.mp4
 ```
 
-## Bonus Round: Adaptive Streaming
+### Bonus Round: Adaptive Streaming
 
-![adaptive streaming](/img/adaptive-streaming.png)
+![adaptive streaming](.gitbook/assets/adaptive-streaming.png)
 
-**What?** the act of producing many resolutions (bit rates) and split the media into chunks and serve them via http.
+**What?** the act of producing many resolutions \(bit rates\) and split the media into chunks and serve them via http.
 
 **Why?** to provide a flexible media that can be watched on a low end smartphone or on a 4K TV, it's also easy to scale and deploy but it can add latency.
 
 **How?** creating an adaptive WebM using DASH.
+
 ```bash
 # video streams
 $ ffmpeg -i bunny_1080p_60fps.mp4 -c:v libvpx-vp9 -s 160x90 -b:v 250k -keyint_min 150 -g 150 -an -f webm -dash 1 video_160x90_250k.webm
@@ -250,70 +248,65 @@ $ ffmpeg \
 
 PS: I stole this example from the [Instructions to playback Adaptive WebM using DASH](http://wiki.webmproject.org/adaptive-streaming/instructions-to-playback-adaptive-webm-using-dash)
 
-## Going beyond
+### Going beyond
 
-There are [many and many other usages for FFmpeg](https://github.com/leandromoreira/digital_video_introduction/blob/master/encoding_pratical_examples.md#split-and-merge-smoothly).
-I use it in conjunction with *iMovie* to produce/edit some videos for YouTube and you can certainly use it professionally.
+There are [many and many other usages for FFmpeg](https://github.com/leandromoreira/digital_video_introduction/blob/master/encoding_pratical_examples.md#split-and-merge-smoothly). I use it in conjunction with _iMovie_ to produce/edit some videos for YouTube and you can certainly use it professionally.
 
-# Learn FFmpeg libav the Hard Way
+## Learn FFmpeg libav the Hard Way
 
-> Don't you wonder sometimes 'bout sound and vision?
-> **David Robert Jones**
+> Don't you wonder sometimes 'bout sound and vision? **David Robert Jones**
 
-Since the [FFmpeg](#ffmpeg---command-line) is so useful as a command line tool to do essential tasks over the media files, how can we use it in our programs?
+Since the [FFmpeg](./#ffmpeg---command-line) is so useful as a command line tool to do essential tasks over the media files, how can we use it in our programs?
 
-FFmpeg is [composed by several libraries](https://www.ffmpeg.org/doxygen/trunk/index.html) that can be integrated into our own programs.
-Usually, when you install FFmpeg, it installs automatically all these libraries. I'll be referring to the set of these libraries as **FFmpeg libav**.
+FFmpeg is [composed by several libraries](https://www.ffmpeg.org/doxygen/trunk/index.html) that can be integrated into our own programs. Usually, when you install FFmpeg, it installs automatically all these libraries. I'll be referring to the set of these libraries as **FFmpeg libav**.
 
 > This title is a homage to Zed Shaw's series [Learn X the Hard Way](https://learncodethehardway.org/), particularly his book Learn C the Hard Way.
 
-## Chapter 0 - The infamous hello world
-This hello world actually won't show the message `"hello world"` in the terminal :tongue:
-Instead we're going to **print out information about the video**, things like its format (container), duration, resolution, audio channels and, in the end, we'll **decode some frames and save them as image files**.
+### Chapter 0 - The infamous hello world
 
-### FFmpeg libav architecture
+This hello world actually won't show the message `"hello world"` in the terminal :tongue: Instead we're going to **print out information about the video**, things like its format \(container\), duration, resolution, audio channels and, in the end, we'll **decode some frames and save them as image files**.
+
+#### FFmpeg libav architecture
 
 But before we start to code, let's learn how **FFmpeg libav architecture** works and how its components communicate with others.
 
 Here's a diagram of the process of decoding a video:
 
-![ffmpeg libav architecture - decoding process](/img/decoding.png)
+![ffmpeg libav architecture - decoding process](.gitbook/assets/decoding.png)
 
-You'll first need to load your media file into a component called [`AVFormatContext`](https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html) (the video container is also known as format).
-It actually doesn't fully load the whole file: it often only reads the header.
+You'll first need to load your media file into a component called [`AVFormatContext`](https://ffmpeg.org/doxygen/trunk/structAVFormatContext.html) \(the video container is also known as format\). It actually doesn't fully load the whole file: it often only reads the header.
 
-Once we loaded the minimal **header of our container**, we can access its streams (think of them as a rudimentary audio and video data).
-Each stream will be available in a component called [`AVStream`](https://ffmpeg.org/doxygen/trunk/structAVStream.html).
+Once we loaded the minimal **header of our container**, we can access its streams \(think of them as a rudimentary audio and video data\). Each stream will be available in a component called [`AVStream`](https://ffmpeg.org/doxygen/trunk/structAVStream.html).
 
 > Stream is a fancy name for a continuous flow of data.
 
-Suppose our video has two streams: an audio encoded with [AAC CODEC](https://en.wikipedia.org/wiki/Advanced_Audio_Coding) and a video encoded with [H264 (AVC) CODEC](https://en.wikipedia.org/wiki/H.264/MPEG-4_AVC). From each stream we can extract **pieces (slices) of data** called packets that will be loaded into components named [`AVPacket`](https://ffmpeg.org/doxygen/trunk/structAVPacket.html).
+Suppose our video has two streams: an audio encoded with [AAC CODEC](https://en.wikipedia.org/wiki/Advanced_Audio_Coding) and a video encoded with [H264 \(AVC\) CODEC](https://en.wikipedia.org/wiki/H.264/MPEG-4_AVC). From each stream we can extract **pieces \(slices\) of data** called packets that will be loaded into components named [`AVPacket`](https://ffmpeg.org/doxygen/trunk/structAVPacket.html).
 
-The **data inside the packets are still coded** (compressed) and in order to decode the packets, we need to pass them to a specific [`AVCodec`](https://ffmpeg.org/doxygen/trunk/structAVCodec.html).
+The **data inside the packets are still coded** \(compressed\) and in order to decode the packets, we need to pass them to a specific [`AVCodec`](https://ffmpeg.org/doxygen/trunk/structAVCodec.html).
 
-The `AVCodec` will decode them into [`AVFrame`](https://ffmpeg.org/doxygen/trunk/structAVFrame.html) and finally, this component gives us **the uncompressed frame**.  Noticed that the same terminology/process is used either by audio and video stream.
+The `AVCodec` will decode them into [`AVFrame`](https://ffmpeg.org/doxygen/trunk/structAVFrame.html) and finally, this component gives us **the uncompressed frame**. Noticed that the same terminology/process is used either by audio and video stream.
 
-### Requirements
+#### Requirements
 
-Since some people were [facing issues while compiling or running the examples](https://github.com/leandromoreira/ffmpeg-libav-tutorial/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+compiling) **we're going to use [`Docker`](https://docs.docker.com/install/) as our development/runner environment,** we'll also use the big buck bunny video so if you don't have it locally just run the command `make fetch_small_bunny_video`.
+Since some people were [facing issues while compiling or running the examples](https://github.com/leandromoreira/ffmpeg-libav-tutorial/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+compiling) **we're going to use** [**`Docker`**](https://docs.docker.com/install/) **as our development/runner environment,** we'll also use the big buck bunny video so if you don't have it locally just run the command `make fetch_small_bunny_video`.
 
-### Chapter 0 - code walkthrough
+#### Chapter 0 - code walkthrough
 
-> #### TLDR; show me the [code](/0_hello_world.c) and execution.
+> **TLDR; show me the code and execution.**
+>
 > ```bash
 > $ make run_hello
 > ```
 
-We'll skip some details, but don't worry: the [source code is available at github](/0_hello_world.c).
+We'll skip some details, but don't worry: the [source code is available at github](https://github.com/namndev/FFmpegTutorial/tree/1cb33a63fca8d86e440d687ec8633d47b1fc8ac5/0_hello_world.c).
 
-We're going to allocate memory to the component [`AVFormatContext`](http://ffmpeg.org/doxygen/trunk/structAVFormatContext.html) that will hold  information about the format (container).
+We're going to allocate memory to the component [`AVFormatContext`](http://ffmpeg.org/doxygen/trunk/structAVFormatContext.html) that will hold information about the format \(container\).
 
 ```c
 AVFormatContext *pFormatContext = avformat_alloc_context();
 ```
 
-Now we're going to open the file and read its header and fill the `AVFormatContext` with minimal information about the format (notice that usually the codecs are not opened).
-The function used to do this is [`avformat_open_input`](http://ffmpeg.org/doxygen/trunk/group__lavf__decoding.html#ga31d601155e9035d5b0e7efedc894ee49). It expects an `AVFormatContext`, a `filename` and two optional arguments: the [`AVInputFormat`](https://ffmpeg.org/doxygen/trunk/structAVInputFormat.html) (if you pass `NULL`, FFmpeg will guess the format) and the [`AVDictionary`](https://ffmpeg.org/doxygen/trunk/structAVDictionary.html) (which are the options to the demuxer).
+Now we're going to open the file and read its header and fill the `AVFormatContext` with minimal information about the format \(notice that usually the codecs are not opened\). The function used to do this is [`avformat_open_input`](http://ffmpeg.org/doxygen/trunk/group__lavf__decoding.html#ga31d601155e9035d5b0e7efedc894ee49). It expects an `AVFormatContext`, a `filename` and two optional arguments: the [`AVInputFormat`](https://ffmpeg.org/doxygen/trunk/structAVInputFormat.html) \(if you pass `NULL`, FFmpeg will guess the format\) and the [`AVDictionary`](https://ffmpeg.org/doxygen/trunk/structAVDictionary.html) \(which are the options to the demuxer\).
 
 ```c
 avformat_open_input(&pFormatContext, filename, NULL, NULL);
@@ -325,8 +318,7 @@ We can print the format name and the media duration:
 printf("Format %s, duration %lld us", pFormatContext->iformat->long_name, pFormatContext->duration);
 ```
 
-To access the `streams`, we need to read data from the media. The function [`avformat_find_stream_info`](https://ffmpeg.org/doxygen/trunk/group__lavf__decoding.html#gad42172e27cddafb81096939783b157bb) does that.
-Now, the `pFormatContext->nb_streams` will hold the amount of streams and the `pFormatContext->streams[i]` will give us the `i` stream (an [`AVStream`](https://ffmpeg.org/doxygen/trunk/structAVStream.html)).
+To access the `streams`, we need to read data from the media. The function [`avformat_find_stream_info`](https://ffmpeg.org/doxygen/trunk/group__lavf__decoding.html#gad42172e27cddafb81096939783b157bb) does that. Now, the `pFormatContext->nb_streams` will hold the amount of streams and the `pFormatContext->streams[i]` will give us the `i` stream \(an [`AVStream`](https://ffmpeg.org/doxygen/trunk/structAVStream.html)\).
 
 ```c
 avformat_find_stream_info(pFormatContext,  NULL);
@@ -348,6 +340,7 @@ AVCodecParameters *pLocalCodecParameters = pFormatContext->streams[i]->codecpar;
 ```
 
 With the codec properties we can look up the proper CODEC querying the function [`avcodec_find_decoder`](https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html#ga19a0ca553277f019dd5b0fec6e1f9dca) and find the registered decoder for the codec id and return an [`AVCodec`](http://ffmpeg.org/doxygen/trunk/structAVCodec.html), the component that knows how to en**CO**de and **DEC**ode the stream.
+
 ```c
 AVCodec *pLocalCodec = avcodec_find_decoder(pLocalCodecParameters->codec_id);
 ```
@@ -390,13 +383,13 @@ while (av_read_frame(pFormatContext, pPacket) >= 0) {
 }
 ```
 
-Let's **send the raw data packet** (compressed frame) to the decoder, through the codec context, using the function [`avcodec_send_packet`](https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html#ga58bc4bf1e0ac59e27362597e467efff3).
+Let's **send the raw data packet** \(compressed frame\) to the decoder, through the codec context, using the function [`avcodec_send_packet`](https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html#ga58bc4bf1e0ac59e27362597e467efff3).
 
 ```c
 avcodec_send_packet(pCodecContext, pPacket);
 ```
 
-And let's **receive the raw data frame** (uncompressed frame) from the decoder, through the same codec context, using the function [`avcodec_receive_frame`](https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html#ga11e6542c4e66d3028668788a1a74217c).
+And let's **receive the raw data frame** \(uncompressed frame\) from the decoder, through the same codec context, using the function [`avcodec_receive_frame`](https://ffmpeg.org/doxygen/trunk/group__lavc__decoding.html#ga11e6542c4e66d3028668788a1a74217c).
 
 ```c
 avcodec_receive_frame(pCodecContext, pFrame);
@@ -417,7 +410,7 @@ printf(
 );
 ```
 
-Finally we can save our decoded frame into a [simple gray image](https://en.wikipedia.org/wiki/Netpbm_format#PGM_example). The process is very simple, we'll use the `pFrame->data` where the index is related to the [planes Y, Cb and Cr](https://en.wikipedia.org/wiki/YCbCr), we just picked `0` (Y) to save our gray image.
+Finally we can save our decoded frame into a [simple gray image](https://en.wikipedia.org/wiki/Netpbm_format#PGM_example). The process is very simple, we'll use the `pFrame->data` where the index is related to the [planes Y, Cb and Cr](https://en.wikipedia.org/wiki/YCbCr), we just picked `0` \(Y\) to save our gray image.
 
 ```c
 save_gray_frame(pFrame->data[0], pFrame->linesize[0], pFrame->width, pFrame->height, frame_filename);
@@ -440,30 +433,25 @@ static void save_gray_frame(unsigned char *buf, int wrap, int xsize, int ysize, 
 
 And voilà! Now we have a gray scale image with 2MB:
 
-![saved frame](/img/generated_frame.png)
+![saved frame](.gitbook/assets/generated_frame.png)
 
-## Chapter 1 - syncing audio and video
+### Chapter 1 - syncing audio and video
 
 > **Be the player** - a young JS developer writing a new MSE video player.
 
-Before we move to [code a transcoding example](#chapter-2---transcoding) let's talk about **timing**, or how a video player knows the right time to play a frame.
+Before we move to [code a transcoding example](./#chapter-2---transcoding) let's talk about **timing**, or how a video player knows the right time to play a frame.
 
 In the last example, we saved some frames that can be seen here:
 
-![frame 0](/img/hello_world_frames/frame0.png)
-![frame 1](/img/hello_world_frames/frame1.png)
-![frame 2](/img/hello_world_frames/frame2.png)
-![frame 3](/img/hello_world_frames/frame3.png)
-![frame 4](/img/hello_world_frames/frame4.png)
-![frame 5](/img/hello_world_frames/frame5.png)
+![frame 0](.gitbook/assets/frame0.png) ![frame 1](.gitbook/assets/frame1.png) ![frame 2](.gitbook/assets/frame2.png) ![frame 3](.gitbook/assets/frame3.png) ![frame 4](.gitbook/assets/frame4.png) ![frame 5](.gitbook/assets/frame5.png)
 
 When we're designing a video player we need to **play each frame at a given pace**, otherwise it would be hard to pleasantly see the video either because it's playing so fast or so slow.
 
-Therefore we need to introduce some logic to play each frame smoothly. For that matter, each frame has a **presentation timestamp** (PTS) which is an increasing number factored in a **timebase** that is a rational number (where the denominator is known as **timescale**) divisible by the **frame rate (fps)**.
+Therefore we need to introduce some logic to play each frame smoothly. For that matter, each frame has a **presentation timestamp** \(PTS\) which is an increasing number factored in a **timebase** that is a rational number \(where the denominator is known as **timescale**\) divisible by the **frame rate \(fps\)**.
 
 It's easier to understand when we look at some examples, let's simulate some scenarios.
 
-For a `fps=60/1` and `timebase=1/60000` each PTS will increase `timescale / fps = 1000` therefore the **PTS real time** for each frame could be (supposing it started at 0):
+For a `fps=60/1` and `timebase=1/60000` each PTS will increase `timescale / fps = 1000` therefore the **PTS real time** for each frame could be \(supposing it started at 0\):
 
 * `frame=0, PTS = 0, PTS_TIME = 0`
 * `frame=1, PTS = 1000, PTS_TIME = PTS * timebase = 0.016`
@@ -489,13 +477,13 @@ For a `fps=25/1` and `timebase=1/75` each PTS will increase `timescale / fps = 3
 
 Now with the `pts_time` we can find a way to render this synched with audio `pts_time` or with a system clock. The FFmpeg libav provides these info through its API:
 
-- fps = [`AVStream->avg_frame_rate`](https://ffmpeg.org/doxygen/trunk/structAVStream.html#a946e1e9b89eeeae4cab8a833b482c1ad)
-- tbr = [`AVStream->r_frame_rate`](https://ffmpeg.org/doxygen/trunk/structAVStream.html#ad63fb11cc1415e278e09ddc676e8a1ad)
-- tbn = [`AVStream->time_base`](https://ffmpeg.org/doxygen/trunk/structAVStream.html#a9db755451f14e2bf590d4b85d82b32e6)
+* fps = [`AVStream->avg_frame_rate`](https://ffmpeg.org/doxygen/trunk/structAVStream.html#a946e1e9b89eeeae4cab8a833b482c1ad)
+* tbr = [`AVStream->r_frame_rate`](https://ffmpeg.org/doxygen/trunk/structAVStream.html#ad63fb11cc1415e278e09ddc676e8a1ad)
+* tbn = [`AVStream->time_base`](https://ffmpeg.org/doxygen/trunk/structAVStream.html#a9db755451f14e2bf590d4b85d82b32e6)
 
-Just out of curiosity, the frames we saved were sent in a DTS order (frames: 1,6,4,2,3,5) but played at a PTS order (frames: 1,2,3,4,5). Also, notice how cheap are B-Frames in comparison to P or I-Frames.
+Just out of curiosity, the frames we saved were sent in a DTS order \(frames: 1,6,4,2,3,5\) but played at a PTS order \(frames: 1,2,3,4,5\). Also, notice how cheap are B-Frames in comparison to P or I-Frames.
 
-```
+```text
 LOG: AVStream->r_frame_rate 60/1
 LOG: AVStream->time_base 1/60000
 ...
@@ -507,32 +495,34 @@ LOG: Frame 5 (type=B, size=6253 bytes) pts 10000 key_frame 0 [DTS 5]
 LOG: Frame 6 (type=P, size=34992 bytes) pts 11000 key_frame 0 [DTS 1]
 ```
 
-## Chapter 2 - remuxing
+### Chapter 2 - remuxing
 
-Remuxing is the act of changing from one format (container) to another, for instance, we can change a [MPEG-4](https://en.wikipedia.org/wiki/MPEG-4_Part_14) video to a [MPEG-TS](https://en.wikipedia.org/wiki/MPEG_transport_stream) one without much pain using FFmpeg:
+Remuxing is the act of changing from one format \(container\) to another, for instance, we can change a [MPEG-4](https://en.wikipedia.org/wiki/MPEG-4_Part_14) video to a [MPEG-TS](https://en.wikipedia.org/wiki/MPEG_transport_stream) one without much pain using FFmpeg:
 
 ```bash
 ffmpeg input.mp4 -c copy output.ts
 ```
 
-It'll demux the mp4 but it won't decode or encode it (`-c copy`) and in the end, it'll mux it into a `mpegts` file. If you don't provide the format `-f` the ffmpeg will try to guess it based on the file's extension.
+It'll demux the mp4 but it won't decode or encode it \(`-c copy`\) and in the end, it'll mux it into a `mpegts` file. If you don't provide the format `-f` the ffmpeg will try to guess it based on the file's extension.
 
 The general usage of FFmpeg or the libav follows a pattern/architecture or workflow:
-* **[protocol layer](https://ffmpeg.org/doxygen/trunk/protocols_8c.html)** - it accepts an `input` (a `file` for instance but it could be a `rtmp` or `HTTP` input as well)
-* **[format layer](https://ffmpeg.org/doxygen/trunk/group__libavf.html)** - it `demuxes` its content, revealing mostly metadata and its streams
-* **[codec layer](https://ffmpeg.org/doxygen/trunk/group__libavc.html)** - it `decodes` its compressed streams data <sup>*optional*</sup>
-* **[pixel layer](https://ffmpeg.org/doxygen/trunk/group__lavfi.html)** - it can also apply some `filters` to the raw frames (like resizing)<sup>*optional*</sup>
-* and then it does the reverse path
-* **[codec layer](https://ffmpeg.org/doxygen/trunk/group__libavc.html)** - it `encodes` (or `re-encodes` or even `transcodes`) the raw frames<sup>*optional*</sup>
-* **[format layer](https://ffmpeg.org/doxygen/trunk/group__libavf.html)** - it `muxes` (or `remuxes`) the raw streams (the compressed data)
-* **[protocol layer](https://ffmpeg.org/doxygen/trunk/protocols_8c.html)** - and finally the muxed data is sent to an `output` (another file or maybe a network remote server)
 
-![ffmpeg libav workflow](/img/ffmpeg_libav_workflow.jpeg)
+* [**protocol layer**](https://ffmpeg.org/doxygen/trunk/protocols_8c.html) - it accepts an `input` \(a `file` for instance but it could be a `rtmp` or `HTTP` input as well\)
+* [**format layer**](https://ffmpeg.org/doxygen/trunk/group__libavf.html) - it `demuxes` its content, revealing mostly metadata and its streams
+* [**codec layer**](https://ffmpeg.org/doxygen/trunk/group__libavc.html) - it `decodes` its compressed streams data _optional_
+* [**pixel layer**](https://ffmpeg.org/doxygen/trunk/group__lavfi.html) - it can also apply some `filters` to the raw frames \(like resizing\)_optional_
+* and then it does the reverse path
+* [**codec layer**](https://ffmpeg.org/doxygen/trunk/group__libavc.html) - it `encodes` \(or `re-encodes` or even `transcodes`\) the raw frames_optional_
+* [**format layer**](https://ffmpeg.org/doxygen/trunk/group__libavf.html) - it `muxes` \(or `remuxes`\) the raw streams \(the compressed data\)
+* [**protocol layer**](https://ffmpeg.org/doxygen/trunk/protocols_8c.html) - and finally the muxed data is sent to an `output` \(another file or maybe a network remote server\)
+
+![ffmpeg libav workflow](.gitbook/assets/ffmpeg_libav_workflow.jpeg)
+
 > This graph is strongly inspired by [Leixiaohua's](http://leixiaohua1020.github.io/#ffmpeg-development-examples) and [Slhck's](https://slhck.info/ffmpeg-encoding-course/#/9) works.
 
 Now let's code an example using libav to provide the same effect as in `ffmpeg input.mp4 -c copy output.ts`.
 
-We're going to read from an input (`input_format_context`) and change it to another output (`output_format_context`).
+We're going to read from an input \(`input_format_context`\) and change it to another output \(`output_format_context`\).
 
 ```c
 AVFormatContext *input_format_context = NULL;
@@ -566,7 +556,7 @@ number_of_streams = input_format_context->nb_streams;
 streams_list = av_mallocz_array(number_of_streams, sizeof(*streams_list));
 ```
 
-Just after we allocated the required memory, we're going to loop throughout all the streams and for each one we need to create new out stream into our output format context, using the [avformat_new_stream](https://ffmpeg.org/doxygen/trunk/group__lavf__core.html#gadcb0fd3e507d9b58fe78f61f8ad39827) function. Notice that we're marking all the streams that aren't video, audio or subtitle so we can skip them after.
+Just after we allocated the required memory, we're going to loop throughout all the streams and for each one we need to create new out stream into our output format context, using the [avformat\_new\_stream](https://ffmpeg.org/doxygen/trunk/group__lavf__core.html#gadcb0fd3e507d9b58fe78f61f8ad39827) function. Notice that we're marking all the streams that aren't video, audio or subtitle so we can skip them after.
 
 ```c
 for (i = 0; i < input_format_context->nb_streams; i++) {
@@ -612,7 +602,7 @@ if (ret < 0) {
 }
 ```
 
-After that, we can copy the streams, packet by packet, from our input to our output streams. We'll loop while it has packets (`av_read_frame`), for each packet we need to re-calculate the PTS and DTS to finally write it (`av_interleaved_write_frame`) to our output format context.
+After that, we can copy the streams, packet by packet, from our input to our output streams. We'll loop while it has packets \(`av_read_frame`\), for each packet we need to re-calculate the PTS and DTS to finally write it \(`av_interleaved_write_frame`\) to our output format context.
 
 ```c
 while (1) {
@@ -644,13 +634,13 @@ while (1) {
 }
 ```
 
-To finalize we need to write the stream trailer to an output media file with [av_write_trailer](https://ffmpeg.org/doxygen/trunk/group__lavf__encoding.html#ga7f14007e7dc8f481f054b21614dfec13) function.
+To finalize we need to write the stream trailer to an output media file with [av\_write\_trailer](https://ffmpeg.org/doxygen/trunk/group__lavf__encoding.html#ga7f14007e7dc8f481f054b21614dfec13) function.
 
 ```c
 av_write_trailer(output_format_context);
 ```
 
-Now we're ready to test it and the first test will be a format (video container) conversion from a MP4 to a MPEG-TS video file. We're basically making the command line `ffmpeg input.mp4 -c copy output.ts` with libav.
+Now we're ready to test it and the first test will be a format \(video container\) conversion from a MP4 to a MPEG-TS video file. We're basically making the command line `ffmpeg input.mp4 -c copy output.ts` with libav.
 
 ```bash
 make run_remuxing_ts
@@ -673,13 +663,13 @@ Input #0, mpegts, from 'remuxed_small_bunny_1080p_60fps.ts':
 
 To sum up what we did here in a graph, we can revisit our initial [idea about how libav works](https://github.com/leandromoreira/ffmpeg-libav-tutorial#ffmpeg-libav-architecture) but showing that we skipped the codec part.
 
-![remuxing libav components](/img/remuxing_libav_components.png)
+![remuxing libav components](.gitbook/assets/remuxing_libav_components.png)
 
-Before we end this chapter I'd like to show an important part of the remuxing process, **you can pass options to the muxer**. Let's say we want to delivery [MPEG-DASH](https://developer.mozilla.org/en-US/docs/Web/Apps/Fundamentals/Audio_and_video_delivery/Setting_up_adaptive_streaming_media_sources#MPEG-DASH_Encoding) format for that matter we need to use [fragmented mp4](https://stackoverflow.com/a/35180327) (sometimes referred as `fmp4`) instead of MPEG-TS or plain MPEG-4.
+Before we end this chapter I'd like to show an important part of the remuxing process, **you can pass options to the muxer**. Let's say we want to delivery [MPEG-DASH](https://developer.mozilla.org/en-US/docs/Web/Apps/Fundamentals/Audio_and_video_delivery/Setting_up_adaptive_streaming_media_sources#MPEG-DASH_Encoding) format for that matter we need to use [fragmented mp4](https://stackoverflow.com/a/35180327) \(sometimes referred as `fmp4`\) instead of MPEG-TS or plain MPEG-4.
 
 With the [command line we can do that easily](https://developer.mozilla.org/en-US/docs/Web/API/Media_Source_Extensions_API/Transcoding_assets_for_MSE#Fragmenting).
 
-```
+```text
 ffmpeg -i non_fragmented.mp4 -movflags frag_keyframe+empty_moov+default_base_moof fragmented.mp4
 ```
 
@@ -699,9 +689,9 @@ make run_remuxing_fragmented_mp4
 
 But to make sure that I'm not lying to you. You can use the amazing site/tool [gpac/mp4box.js](http://download.tsi.telecom-paristech.fr/gpac/mp4box.js/filereader.html) or the site [http://mp4parser.com/](http://mp4parser.com/) to see the differences, first load up the "common" mp4.
 
-![mp4 boxes](/img/boxes_normal_mp4.png)
+![mp4 boxes](.gitbook/assets/boxes_normal_mp4.png)
 
 As you can see it has a single `mdat` atom/box, **this is place where the video and audio frames are**. Now load the fragmented mp4 to see which how it spreads the `mdat` boxes.
 
-![fragmented mp4 boxes](/img/boxes_fragmente_mp4.png)
+![fragmented mp4 boxes](.gitbook/assets/boxes_fragmente_mp4.png)
 
