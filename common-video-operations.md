@@ -6,7 +6,9 @@ description: While working with audio/video we usually do a set of tasks with th
 
 #### Transcoding
 
-![transcoding](.gitbook/assets/transcoding.png)
+<p align="center">
+    <img src=".gitbook/assets/transcoding.png" />
+</p>
 
 **What?** the act of converting one of the streams \(audio or video\) from one CODEC to another one.
 
