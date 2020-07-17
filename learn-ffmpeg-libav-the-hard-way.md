@@ -38,7 +38,7 @@ The AVCodec will decode them into [AVFrame](https://ffmpeg.org/doxygen/trunk/str
 
 Since some people were [facing issues while compiling or running the examples](https://github.com/leandromoreira/ffmpeg-libav-tutorial/issues?utf8=✓&q=is%3Aissue+is%3Aopen+compiling) __we're going to use [Docker](https://docs.docker.com/install/) as our development/runner environment__, we'll also use the big buck bunny video so if you don't have it locally just run the command `make fetch_small_bunny_video`.
 
-### Chapter 0 - Code walkthrough
+## Chapter 1 - Code walkthrough
 
 >__show me the [code](https://github.com/namndev/FFmpegTutorial/blob/master/0_hello_world.c) and execution__.
 >```bash
@@ -181,7 +181,7 @@ And here! Now we have a gray scale image with 2MB:
     <img src=".gitbook/assets/generated_frame.png" />
 </p>
 
-### Chapter 1 - Syncing audio and video
+## Chapter 2 - Syncing audio and video
 
 >__Be the player__ - a young JS developer writing a new MSE video player.
 
@@ -248,7 +248,7 @@ LOG: Frame 5 (type=B, size=6253 bytes) pts 10000 key_frame 0 [DTS 5]
 LOG: Frame 6 (type=P, size=34992 bytes) pts 11000 key_frame 0 [DTS 1]
 ```
 
-### Chapter 2 - Remuxing
+## Chapter 3 - Remuxing
 
 Remuxing is the act of changing from one format (container) to another, for instance, we can change a MPEG-4 video to a MPEG-TS one without much pain using FFmpeg:
 
@@ -455,9 +455,9 @@ As you can see it has a single `mdat` atom/box, **this is place where the video 
   <img src=".gitbook/assets/boxes_fragmente_mp4.png" />
 </p>
 
-### Chapter 3 - Transcoding
+## Chapter 4 - Transcoding
 
-> #### TLDR; show me the [code](/3_transcoding.c) and execution.
+> show me the [code](/3_transcoding.c) and execution.
 > ```bash
 > $ make run_transcoding
 > ```
@@ -472,7 +472,7 @@ In this chapter, we're going to create a minimalist transcoder, written in C, th
 
 > _Just a quick recap:_ The [**AVFormatContext**](https://www.ffmpeg.org/doxygen/trunk/structAVFormatContext.html) is the abstraction for the format of the media file, aka container (ex: MKV, MP4, Webm, TS). The [**AVStream**](https://www.ffmpeg.org/doxygen/trunk/structAVStream.html) represents each type of data for a given format (ex: audio, video, subtitle, metadata). The [**AVPacket**](https://www.ffmpeg.org/doxygen/trunk/structAVPacket.html) is a slice of compressed data obtained from the `AVStream` that can be decoded by an [**AVCodec**](https://www.ffmpeg.org/doxygen/trunk/structAVCodec.html) (ex: av1, h264, vp9, hevc) generating a raw data called [**AVFrame**](https://www.ffmpeg.org/doxygen/trunk/structAVFrame.html).
 
-#### Transmuxing
+### Transmuxing
 
 Let's start with the simple transmuxing operation and then we can build upon this code, the first step is to **load the input file**.
 
@@ -533,7 +533,7 @@ while (av_read_frame(decoder_avfc, input_packet) >= 0)
 av_write_trailer(encoder_avfc);
 ```
 
-#### Transcoding
+### Transcoding
 
 The previous section showed a simple transmuxer program, now we're going to add the capability to encode files, specifically we're going to enable it to transcode videos from `h264` to `h265`.
 
