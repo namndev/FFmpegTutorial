@@ -53,7 +53,7 @@ required_storage = tis * fps * toppf * cpp
 
 This video would require approximately `250.28GB` of storage or `1.11Gbps` of bandwidth! That's why we need to use a [CODEC](https://github.com/leandromoreira/digital_video_introduction#how-does-a-video-codec-work).
 
-## container - a comfy place for audio and video
+## Container - a comfy place for audio and video
 
 > A container or wrapper format is a metafile format whose specification describes how different elements of data and metadata coexist in a computer file. [https://en.wikipedia.org/wiki/Digital\_container\_format](https://en.wikipedia.org/wiki/Digital_container_format)
 

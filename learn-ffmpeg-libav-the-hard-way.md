@@ -457,11 +457,11 @@ As you can see it has a single `mdat` atom/box, **this is place where the video 
 
 ## Chapter 4 - Transcoding
 
-> show me the [code](/3_transcoding.c) and execution.
+> show me the [code](https://github.com/namndev/FFmpegTutorial/blob/master/3_transcoding.c) and execution.
 > ```bash
 > $ make run_transcoding
 > ```
-> We'll skip some details, but don't worry: the [source code is available at github](/3_transcoding.c).
+> We'll skip some details, but don't worry: the [source code is available at github](https://github.com/namndev/FFmpegTutorial/blob/master/3_transcoding.c).
 
 
 In this chapter, we're going to create a minimalist transcoder, written in C, that can convert videos coded in H264 to H265 using **FFmpeg/libav** library specifically [libavcodec](https://ffmpeg.org/libavcodec.html), libavformat, and libavutil.
