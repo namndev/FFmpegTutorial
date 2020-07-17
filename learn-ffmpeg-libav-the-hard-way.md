@@ -38,7 +38,7 @@ The AVCodec will decode them into [AVFrame](https://ffmpeg.org/doxygen/trunk/str
 
 Since some people were [facing issues while compiling or running the examples](https://github.com/leandromoreira/ffmpeg-libav-tutorial/issues?utf8=✓&q=is%3Aissue+is%3Aopen+compiling) __we're going to use [Docker](https://docs.docker.com/install/) as our development/runner environment__, we'll also use the big buck bunny video so if you don't have it locally just run the command `make fetch_small_bunny_video`.
 
-### Chapter 0 - code walkthrough
+### Chapter 0 - Code walkthrough
 
 >__show me the [code](https://github.com/namndev/FFmpegTutorial/blob/master/0_hello_world.c) and execution__.
 >```bash
@@ -181,7 +181,7 @@ And here! Now we have a gray scale image with 2MB:
     <img src=".gitbook/assets/generated_frame.png" />
 </p>
 
-### Chapter 1 - syncing audio and video
+### Chapter 1 - Syncing audio and video
 
 >__Be the player__ - a young JS developer writing a new MSE video player.
 
@@ -455,7 +455,7 @@ As you can see it has a single `mdat` atom/box, **this is place where the video 
   <img src=".gitbook/assets/boxes_fragmente_mp4.png" />
 </p>
 
-### Chapter 3 - transcoding
+### Chapter 3 - Transcoding
 
 > #### TLDR; show me the [code](/3_transcoding.c) and execution.
 > ```bash
