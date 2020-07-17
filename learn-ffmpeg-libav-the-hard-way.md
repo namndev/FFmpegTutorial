@@ -183,7 +183,7 @@ And here! Now we have a gray scale image with 2MB:
 
 >__Be the player__ - a young JS developer writing a new MSE video player.
 
-Before we move to [code a transcoding example](https://github.com/namndev/FFmpegTutorial#chapter-2---transcoding) let's talk about timing, or how a video player knows the right time to play a frame.
+Before we move to [code a transcoding example](https://github.com/namndev/FFmpegTutorial/blob/master/2_remuxing.c) let's talk about timing, or how a video player knows the right time to play a frame.
 
 In the last example, we saved some frames that can be seen here:
 
